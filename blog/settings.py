@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'account.apps.AccoutnConfig',
+    'account.apps.AccountConfig',
     'api.apps.ApiConfig',
     'graphene_django',
     'corsheaders',
