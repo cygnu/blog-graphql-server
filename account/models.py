@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from .user_manager import UserManager
 import uuid as uuid_lib
 
+
 # Create your models here.
 class User(AbstractBaseUser, PermissionsMixin):
     """
