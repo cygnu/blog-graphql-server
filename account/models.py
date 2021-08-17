@@ -81,3 +81,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     def email_user(self, subject, message, from_email=None, **kwargs):
         """Send an email to this user."""
         send_mail(subject, message, from_email, [self.email], **kwargs)
+
+
+class LinkInBio(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid_lib.uuid4, editable=False)
+    github_url = models.URLField(_('GitHub'))
+    qiita_url = models.URLField(_('Qiita'))
+    twitter_url = models.URLField(_('Twitter'))
+    website_url = models.URLField(_('WebSite'))
+
+    def __str__(self):
+        return self.github_url
