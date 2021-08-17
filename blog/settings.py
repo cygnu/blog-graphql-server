@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
     'graphene_django',
     'corsheaders',
+    'markdownx',
 ]
 
 MIDDLEWARE = [
@@ -77,6 +78,14 @@ CORS_ORIGIN_WHITELIST = [
 ]
 
 ROOT_URLCONF = 'blog.urls'
+
+MARKDOWNX_MARKDOWN_EXTENSIONS = [
+    'markdown.extensions.extra',
+    'markdown.extensions.toc',
+    'markdown.extensions.nl2br',
+]
+
+MARKDOWNX_MEDIA_PATH = datetime.now().strftime('markdownx/%Y/%m/%d')
 
 TEMPLATES = [
     {
@@ -153,3 +162,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
