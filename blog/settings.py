@@ -54,6 +54,13 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+GRAPHENE = {
+    'SCHEMA': 'blog.schema.schema',
+    'MIDDLEWARE': [
+        'graphql_jwt.middleware.JSONWebTokenMiddleware',
+    ],
+}
+
 CORS_ORIGIN_WHITELIST = [
     'localhost:3000/',
     'localhost:3000',
