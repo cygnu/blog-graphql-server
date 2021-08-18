@@ -21,7 +21,12 @@ class LinkInBioType(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     viewer = graphene.Field(UserProfile)
+    all_users = graphene.List(UserType)
 
     @login_required
     def resolve_viewer(self, info, **kwargs):
         return Profile.objects.get(user_prof=info.context.user.id)
+
+    @login_required
+    def resolve_all_users(self, info, **kwargs):
+        return get_user_model().objects.all()
