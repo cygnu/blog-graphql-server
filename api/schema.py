@@ -40,6 +40,13 @@ class Query(graphene.ObjectType):
     )
     all_tags = graphene.List(TagType)
 
+    category = graphene.Field(
+        CategoryType,
+        id=Uuid(),
+        name=graphene.String(),
+    )
+    all_categories = graphene.List(CategoryType)
+
     @login_required
     def resolve_tag(self, info, id, name):
         return Tag.objects.filter(pk=id, name=name).first()
@@ -47,3 +54,11 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_all_tags(self, info, **kwargs):
         return Tag.objects.all()
+
+    @login_required
+    def resolve_category(self, info, id, name):
+        return Category.objects.filter(pk=id, name=name).first()
+
+    @login_required
+    def resolve_all_categories(self, info, **kwargs):
+        return Category.objects.all()
