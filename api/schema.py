@@ -3,6 +3,7 @@ from graphene import relay
 from graphene_django.types import DjangoObjectType
 from blog.scalar import Uuid
 
+from graphene_django.filter import DjangoFilterConnectionField
 from graphql_jwt.decorators import login_required
 
 from .models import (
@@ -47,6 +48,15 @@ class Query(graphene.ObjectType):
     )
     all_categories = graphene.List(CategoryType)
 
+    post = graphene.Field(
+        PostNode,
+        id=Uuid(),
+        author_username=graphene.String(),
+        tags_name=graphene.List(graphene.String),
+        category_name=graphene.String(),
+    )
+    all_posts = DjangoFilterConnectionField(PostNode)
+
     @login_required
     def resolve_tag(self, info, id, name):
         return Tag.objects.filter(pk=id, name=name).first()
@@ -62,3 +72,16 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_all_categories(self, info, **kwargs):
         return Category.objects.all()
+
+    @login_required
+    def resolve_post(self, info, id, author__username, tags__name, category__name):
+        return Post.objects.filter(
+            pk=id,
+            author_username=author__username,
+            tags_name=tags__name,
+            category_name=category__name,
+        ).first()
+
+    @login_required
+    def resolve_all_posts(self, info, **kwargs):
+        return Post.objects.all()
