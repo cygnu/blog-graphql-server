@@ -133,7 +133,24 @@ class AddCategoryMutation(graphene.Mutation):
         return AddCategoryMutation(category=category)
 
 
+class RemoveCategoryInput(graphene.InputObjectType):
+    id = Uuid(required=True)
+
+class RemoveCategoryMutation(graphene.Mutation):
+    category = graphene.Field(CategoryType)
+
+    class Arguments:
+        input = RemoveTagInput(required=True)
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        category = Category.objects.get(**kwargs)
+        category.delete()
+        return RemoveCategoryMutation(category=None)
+
+
 class Mutation(graphene.ObjectType):
     add_tag = AddTagMutation.Field()
     remove_tag = RemoveTagMutation.Field()
     add_category = AddCategoryMutation.Field()
+    remove_category = RemoveCategoryMutation.Field()
