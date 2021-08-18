@@ -217,6 +217,21 @@ class UpdatePostMutation(relay.ClientIDMutation):
         return UpdatePostMutation(post=post)
 
 
+class DeletePostMutation(relay.ClientIDMutation):
+    post = graphene.Field(PostNode)
+
+    class Input:
+        id = Uuid(required=True)
+
+    @login_required
+    def mutate_and_get_payload(root, info, **input):
+        post = Post(
+            id=from_global_id(input.get('id'))[1]
+        )
+        post.delete()
+        return DeletePostMutation(post=None)
+
+
 class Mutation(graphene.ObjectType):
     add_tag = AddTagMutation.Field()
     remove_tag = RemoveTagMutation.Field()
@@ -225,3 +240,4 @@ class Mutation(graphene.ObjectType):
 
     create_post = CreatePostMutation.Field()
     update_post = UpdatePostMutation.Field()
+    delete_post = DeletePostMutation.Field()
