@@ -1,6 +1,9 @@
 import graphene
 from graphene import relay
 from graphene_django.types import DjangoObjectType
+from blog.scalar import Uuid
+
+from graphql_jwt.decorators import login_required
 
 from .models import (
     Tag, Category, Post
@@ -27,3 +30,20 @@ class PostNode(DjangoObjectType):
             'category__name': ['icontains'],
         }
         interfaces = (relay.Node,)
+
+
+class Query(graphene.ObjectType):
+    tag = graphene.Field(
+        TagType,
+        id=Uuid(),
+        name=graphene.String(),
+    )
+    all_tags = graphene.List(TagType)
+
+    @login_required
+    def resolve_tag(self, info, id, name):
+        return Tag.objects.filter(pk=id, name=name).first()
+
+    @login_required
+    def resolve_all_tags(self, info, **kwargs):
+        return Tag.objects.all()
