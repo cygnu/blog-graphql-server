@@ -1,6 +1,7 @@
 import graphene
 from graphene import relay
 from graphene_django.types import DjangoObjectType
+from graphql_relay import from_global_id
 from blog.scalar import Uuid
 
 from graphene_django.filter import DjangoFilterConnectionField
@@ -181,6 +182,41 @@ class CreatePostMutation(relay.ClientIDMutation):
         return CreatePostMutation(post=post)
 
 
+class UpdatePostMutation(relay.ClientIDMutation):
+    post = graphene.Field(PostNode)
+
+    class Input:
+        id = Uuid(required=True)
+        title = graphene.String()
+        description = graphene.String()
+        thumbnail = graphene.String()
+        content = graphene.String()
+        tags = graphene.List(Uuid)
+        category = graphene.String()
+        is_publish = graphene.Boolean(required=True)
+
+    @login_required
+    def mutate_and_get_payload(root, info, **input):
+        post = Post(
+            id=from_global_id(input.get('id'))[1]
+        )
+        post.title = input.get('title')
+        post.content = input.get('content')
+        post.category = input.get('category')
+        post.is_publish = input.get('is_publish')
+
+        if input.get('tags') is not None:
+            tags_set = []
+            for tag_id in input.get('tags'):
+                tag_id = from_global_id(tag_id)[1]
+                tags_object = Tag.objects.get(id=tag_id)
+                tags_set.append(tags_object)
+            post.tags.set(tags_set)
+
+        post.save()
+        return UpdatePostMutation(post=post)
+
+
 class Mutation(graphene.ObjectType):
     add_tag = AddTagMutation.Field()
     remove_tag = RemoveTagMutation.Field()
@@ -188,3 +224,4 @@ class Mutation(graphene.ObjectType):
     remove_category = RemoveCategoryMutation.Field()
 
     create_post = CreatePostMutation.Field()
+    update_post = UpdatePostMutation.Field()
