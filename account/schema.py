@@ -1,7 +1,7 @@
 from graphene_django import DjangoObjectType
 from django.contrib.auth import get_user_model
 
-from .models import Profile
+from .models import Profile, LinkInBio
 
 
 class UserType(DjangoObjectType):
@@ -11,3 +11,7 @@ class UserType(DjangoObjectType):
 class UserProfile(DjangoObjectType):
     class Meta:
         model = Profile
+
+class LinkInBioType(DjangoObjectType):
+    class Meta:
+        model = LinkInBio
