@@ -85,3 +85,22 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_all_posts(self, info, **kwargs):
         return Post.objects.all()
+
+
+class AddTagInput(graphene.InputObjectType):
+    name = graphene.String(required=True)
+
+class AddTagMutation(graphene.Mutation):
+    tag = graphene.Field(TagType)
+
+    class Arguments:
+        input = AddTagInput(required=True)
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        tag = Tag.objects.create(**kwargs)
+        return AddTagMutation(tag=tag)
+
+
+class Mutation(graphene.ObjectType):
+    add_tag = AddTagMutation.Field()
