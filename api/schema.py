@@ -102,5 +102,22 @@ class AddTagMutation(graphene.Mutation):
         return AddTagMutation(tag=tag)
 
 
+class RemoveTagInput(graphene.InputObjectType):
+    id = Uuid(required=True)
+
+class RemoveTagMutation(graphene.Mutation):
+    tag = graphene.Field(TagType)
+
+    class Arguments:
+        input = RemoveTagInput(required=True)
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        tag = Tag.objects.get(**kwargs)
+        tag.delete()
+        return RemoveTagMutation(tag=None)
+
+
 class Mutation(graphene.ObjectType):
     add_tag = AddTagMutation.Field()
+    remove_tag = RemoveTagMutation.Field()
