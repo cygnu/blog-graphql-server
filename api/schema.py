@@ -149,8 +149,42 @@ class RemoveCategoryMutation(graphene.Mutation):
         return RemoveCategoryMutation(category=None)
 
 
+class CreatePostMutation(relay.ClientIDMutation):
+    post = graphene.Field(PostNode)
+
+    class Input:
+        title = graphene.String(required=True)
+        description = graphene.String()
+        thumbnail = graphene.String()
+        content = graphene.String(required=True)
+        tags = graphene.List(graphene.String)
+        category = graphene.String(required=True)
+        is_publish = graphene.Boolean(required=True)
+
+    @login_required
+    def mutate_and_get_payload(root, info, **input):
+        post = Post.objects.create(
+            title=input.get('title'),
+            content=input.get('content'),
+            is_publish=input.get('is_publish'),
+            category=input.get('category'),
+        )
+
+        if input.get('tags') is not None:
+            tags_set = []
+            for tag_name in input.get('tags'):
+                tags_object = Tag.objects.get(tag_name)
+                tags_set.append(tags_object)
+            post.tags.set(tags_set)
+
+        post.save()
+        return CreatePostMutation(post=post)
+
+
 class Mutation(graphene.ObjectType):
     add_tag = AddTagMutation.Field()
     remove_tag = RemoveTagMutation.Field()
     add_category = AddCategoryMutation.Field()
     remove_category = RemoveCategoryMutation.Field()
+
+    create_post = CreatePostMutation.Field()
