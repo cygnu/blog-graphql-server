@@ -68,9 +68,42 @@ class CreateUserMutation(graphene.Mutation):
 
         return CreateUserMutation(user=user)
 
+
+class CreateUserProfileInput(graphene.InputObjectType):
+    username = graphene.String(required=True)
+    first_name = graphene.String()
+    last_name = graphene.String()
+
+class CreateLinkInBioInput(graphene.InputObjectType):
+    github_url = graphene.String(required=True)
+    qiita_url = graphene.String()
+    twitter_url = graphene.String()
+    website_url = graphene.String()
+
+class CreateProfileInput(graphene.InputObjectType):
+    user_prof_input = graphene.Field(CreateUserProfileInput)
+    local = graphene.String()
+    bio = graphene.String()
+    bio_prof_input = graphene.Field(CreateLinkInBioInput)
+    created_at = graphene.types.datetime.DateTime()
+
+class CreateProfileMutation(graphene.Mutation):
+    profile = graphene.Field(UserProfile)
+
+    class Arguments:
+        input = CreateProfileInput(required=True)
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        profile = Profile.objects.create(**kwargs)
+        return CreateProfileMutation(profile=profile)
+
+
 class Mutation(graphene.ObjectType):
     create_user = CreateUserMutation.Field()
 
     token_auth = graphql_jwt.ObtainJSONWebToken.Field()
     verify_token = graphql_jwt.Verify.Field()
     refresh_token = graphql_jwt.Refresh.Field()
+
+    create_profile = CreateProfileMutation.Field()
