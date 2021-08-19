@@ -22,7 +22,7 @@ class LinkInBioType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    viewer = graphene.Field(UserProfile)
+    viewer = graphene.Field(UserType)
     all_users = graphene.List(UserType)
 
     profile = graphene.Field(
@@ -33,8 +33,11 @@ class Query(graphene.ObjectType):
     all_profiles = graphene.List(UserProfile)
 
     @login_required
-    def resolve_viewer(self, info, **kwargs):
-        return Profile.objects.get(user_prof=info.context.user.id)
+    def resolve_viewer(self, info):
+        user = info.context.user
+        if not user.is_authenticated:
+            raise Exception("Authentication credentials were not provided.")
+        return user
 
     @login_required
     def resolve_all_users(self, info, **kwargs):
