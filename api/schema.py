@@ -23,6 +23,7 @@ class PostNode(DjangoObjectType):
     class Meta:
         model = Post
         filter_fields = {
+            'id': ['exact'],
             'title': ['icontains'],
             'author': ['exact'],
             'content': ['icontains'],
