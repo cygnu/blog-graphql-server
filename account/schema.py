@@ -46,3 +46,26 @@ class Query(graphene.ObjectType):
     @login_required
     def resolve_all_profiles(self, info, **kwargs):
         return Profile.objects.all()
+
+
+class CreateUserInput(graphene.InputObjectType):
+    email = graphene.String(required=True)
+    password = graphene.String(required=True)
+
+class CreateUserMutation(graphene.Mutation):
+    user = graphene.Field(UserType)
+
+    class Arguments:
+        input = CreateUserInput(required=True)
+
+    def mutate(self, info, input):
+        user = get_user_model()(
+            email=input.email
+        )
+        user.set_password(input.password)
+        user.save()
+
+        return CreateUserMutation(user=user)
+
+class Mutation(graphene.ObjectType):
+    create_user = CreateUserMutation.Field()
