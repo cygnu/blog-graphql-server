@@ -99,6 +99,39 @@ class CreateProfileMutation(graphene.Mutation):
         return CreateProfileMutation(profile=profile)
 
 
+class UpdateUserProfileInput(graphene.InputObjectType):
+    id = Uuid(required=True)
+    first_name = graphene.String()
+    last_name = graphene.String()
+    email = graphene.String()
+
+class UpdateLinkInBioInput(graphene.InputObjectType):
+    id = Uuid(required=True)
+    github_url = graphene.String()
+    qiita_url = graphene.String()
+    twitter_url = graphene.String()
+    website_url = graphene.String()
+
+class UpdateProfileInput(graphene.InputObjectType):
+    id = Uuid(required=True)
+    user_prof_input = graphene.Field(UpdateUserProfileInput)
+    local = graphene.String()
+    bio = graphene.String()
+    bio_prof_input = graphene.Field(UpdateLinkInBioInput)
+    updated_at = graphene.types.datetime.DateTime()
+
+class UpdateProfileMutation(graphene.Mutation):
+    profile = graphene.Field(UserProfile)
+
+    class Arguments:
+        input = UpdateProfileInput(required=True)
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        profile = Profile.objects.create(**kwargs)
+        return UpdateProfileMutation(profile=profile)
+
+
 class Mutation(graphene.ObjectType):
     create_user = CreateUserMutation.Field()
 
@@ -107,3 +140,4 @@ class Mutation(graphene.ObjectType):
     refresh_token = graphql_jwt.Refresh.Field()
 
     create_profile = CreateProfileMutation.Field()
+    update_profile = UpdateProfileMutation.Field()
