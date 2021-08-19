@@ -131,6 +131,17 @@ class UpdateProfileMutation(graphene.Mutation):
         profile = Profile.objects.create(**kwargs)
         return UpdateProfileMutation(profile=profile)
 
+class CreateLinkInBioMutation(graphene.Mutation):
+    link_in_bio = graphene.Field(LinkInBioType)
+
+    class Arguments:
+        input = CreateLinkInBioInput(required=True)
+
+    @login_required
+    def mutate(self, info, **kwargs):
+        bio = LinkInBio.objects.create(**kwargs)
+        return CreateLinkInBioMutation(link_in_bio=bio)
+
 
 class Mutation(graphene.ObjectType):
     create_user = CreateUserMutation.Field()
@@ -141,3 +152,4 @@ class Mutation(graphene.ObjectType):
 
     create_profile = CreateProfileMutation.Field()
     update_profile = UpdateProfileMutation.Field()
+    create_link_in_bio = CreateLinkInBioMutation.Field()
