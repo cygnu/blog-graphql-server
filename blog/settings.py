@@ -76,10 +76,10 @@ GRAPHQL_JWT = {
 }
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000',
-    'https://localhost:3000',
-    'http://127.0.0.1:3000',
-    'https://127.0.0.1:3000',
+    'http://localhost',
+    'https://localhost',
+    'http://127.0.0.1',
+    'https://127.0.0.1',
 ]
 
 ROOT_URLCONF = 'blog.urls'
